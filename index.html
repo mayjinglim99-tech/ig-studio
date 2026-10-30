@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Content Studio">
+<meta name="apple-mobile-web-app-title" content="IG Studio">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Chewy&family=Gochi+Hand&family=Patrick+Hand&family=Caveat:wght@500;700&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=ZCOOL+KuaiLe&family=Long+Cang&family=Noto+Sans+SC:wght@500;700&family=Noto+Serif+SC:wght@900&display=swap">
 <link rel="stylesheet" href="ig-slides.css">
@@ -63,6 +63,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .cap{white-space:pre-wrap;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px;font-size:14px;margin:0}
 .files{font-size:13px;color:var(--muted)}
 .next{border-color:var(--accent)}
+.install{border-color:var(--accent)}
+.install-row{display:flex;gap:16px;align-items:center}
+.install-row img{border-radius:14px;flex:none}
+.install-steps{margin:14px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
 .empty{color:var(--muted);text-align:center;padding:30px 10px}
 details summary{cursor:pointer;font-weight:600}
 
@@ -87,6 +91,26 @@ legend{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.08em;t
     <p class="lede">Your next Instagram carousels, written in your brand voice and ready to post. Tap <strong>Save slides to phone</strong> to get all 1080 × 1350 slides into Photos with the caption copied.</p>
     <p class="check" id="keyHint" hidden style="margin-top:14px">To make new posts, add your OpenAI key in <a href="#settings">Settings</a> at the bottom. It stays on this device only.</p>
   </header>
+
+  <section class="panel install" id="installPanel" hidden>
+    <div class="install-row">
+      <img src="icons/icon-192.png" alt="" width="64" height="64">
+      <div>
+        <h2 style="margin:0 0 4px">Save IG Studio to your phone</h2>
+        <p class="hint" id="installText" style="margin:0">Open it like an app from your home screen, with its own icon.</p>
+      </div>
+    </div>
+    <ol class="install-steps" id="iosSteps" hidden>
+      <li>Tap the <strong>Share</strong> button <span aria-hidden="true">(square with an arrow ↑)</span> at the bottom of Safari.</li>
+      <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+      <li>Tap <strong>Add</strong>. The IG Studio icon appears on your home screen.</li>
+    </ol>
+    <p class="hint" id="iosOtherBrowser" hidden>On iPhone, open this page in <strong>Safari</strong> to add it to your home screen.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" id="installBtn" type="button" hidden>Add to Home Screen</button>
+      <button class="btn" id="installLater" type="button">Not now</button>
+    </div>
+  </section>
 
   <section class="panel next" id="nextPanel">
     <h2>Next up to post</h2>
@@ -420,6 +444,30 @@ $('restoreFile').addEventListener('change', async e => {
   } catch (err) { setStatus(err.message); }
   e.target.value = '';
 });
+
+/* ── Add to Home Screen ── */
+(() => {
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  let dismissed = false; try { dismissed = localStorage.getItem('igstudio:install-dismissed') === '1'; } catch {}
+  if (standalone || dismissed) return;
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const safari = ios && !/CriOS|FxiOS|EdgiOS|GSA|Instagram|FBAN|FBAV/.test(ua);
+  const panel = $('installPanel');
+  if (ios) {
+    panel.hidden = false;
+    $(safari ? 'iosSteps' : 'iosOtherBrowser').hidden = false;
+  }
+  // Android / Chrome: the browser offers a one-tap install
+  addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    panel.hidden = false;
+    $('installBtn').hidden = false;
+    $('installBtn').onclick = async () => { e.prompt(); const r = await e.userChoice; if (r.outcome === 'accepted') panel.hidden = true; };
+  });
+  addEventListener('appinstalled', () => { panel.hidden = true; });
+  $('installLater').onclick = () => { panel.hidden = true; try { localStorage.setItem('igstudio:install-dismissed', '1'); } catch {} };
+})();
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 load().catch(e => setStatus(e.message));
