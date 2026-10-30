@@ -1,0 +1,79 @@
+/* Instagram Studio slide design — 1080 × 1350 "spiral notebook over moody photo" */
+.slide{
+  --f-display:"Chewy","Arial Rounded MT Bold",system-ui,sans-serif;
+  --f-head:"Gochi Hand","Patrick Hand","Comic Sans MS",cursive;
+  --f-hand:"Patrick Hand","Gochi Hand","Comic Sans MS",cursive;
+  --f-script:"Caveat","Patrick Hand",cursive;
+  --f-serif:"DM Serif Display",Georgia,serif;
+  --f-ui:"DM Sans",system-ui,-apple-system,sans-serif;
+  --paper:#f7f4ef; --paper-ink:#2c2522; --paper-rule:#e4ddd4;
+  --k:1;
+  width:1080px;height:1350px;position:relative;overflow:hidden;color:#fff;font-family:var(--f-hand)}
+.slide.zh{
+  --f-display:"ZCOOL KuaiLe","PingFang SC",sans-serif;
+  --f-head:"ZCOOL KuaiLe","PingFang SC",sans-serif;
+  --f-hand:"Noto Sans SC","PingFang SC",sans-serif;
+  --f-script:"Long Cang","Kaiti SC",cursive;
+  --f-serif:"Noto Serif SC","Songti SC",serif}
+.slide::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:overlay;z-index:30;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* "photo" scenes, one per format */
+.bg-relatable{background:radial-gradient(520px 700px at 82% 18%,rgba(255,240,222,.28),transparent 70%),radial-gradient(300px 300px at 30% 78%,rgba(255,255,255,.10),transparent 70%),radial-gradient(900px 600px at 10% 100%,#2b211c,transparent 70%),linear-gradient(160deg,#6b5a4f 0%,#4a3c34 45%,#2a211d 100%)}
+.bg-storytelling{background:radial-gradient(600px 520px at 20% 15%,rgba(240,236,220,.22),transparent 70%),radial-gradient(420px 420px at 85% 80%,rgba(0,0,0,.35),transparent 70%),linear-gradient(200deg,#5e5c4c 0%,#3d3c31 50%,#22221c 100%)}
+.bg-saveable{background:radial-gradient(560px 640px at 85% 12%,rgba(255,232,228,.30),transparent 70%),radial-gradient(500px 400px at 15% 90%,rgba(0,0,0,.30),transparent 70%),linear-gradient(170deg,#8a6a66 0%,#5e4542 50%,#2f2221 100%)}
+.bg-educational{background:radial-gradient(560px 600px at 80% 15%,rgba(228,236,240,.26),transparent 70%),radial-gradient(500px 400px at 10% 90%,rgba(0,0,0,.32),transparent 70%),linear-gradient(165deg,#5d6870 0%,#3e474e 50%,#23282c 100%)}
+.bg-contrast{background:radial-gradient(520px 560px at 18% 12%,rgba(255,236,214,.24),transparent 70%),radial-gradient(500px 420px at 90% 90%,rgba(0,0,0,.4),transparent 70%),linear-gradient(190deg,#6e5440 0%,#47362a 50%,#251c16 100%)}
+.bg-credible{background:radial-gradient(560px 620px at 84% 14%,rgba(246,240,226,.28),transparent 70%),radial-gradient(500px 400px at 12% 92%,rgba(0,0,0,.3),transparent 70%),linear-gradient(170deg,#7c7360 0%,#544d3f 50%,#2c2821 100%)}
+.streak{position:absolute;width:160px;height:1500px;top:-80px;background:linear-gradient(rgba(255,255,255,.10),rgba(255,255,255,0));transform:rotate(18deg);filter:blur(18px)}
+
+/* cover */
+.cover-title{position:absolute;left:90px;right:90px;top:250px;font-family:var(--f-display);font-size:calc(140px*var(--k));line-height:1.02;color:#fbf6ef;text-shadow:0 6px 0 rgba(0,0,0,.18),0 18px 40px rgba(0,0,0,.25);text-wrap:balance;z-index:2}
+.cover-title .big{font-size:300px;display:block;line-height:.9}
+.cover-sub{position:absolute;left:96px;right:250px;bottom:250px;font-family:var(--f-script);font-weight:700;font-size:56px;line-height:1.15;color:#fff;transform:rotate(-4deg);z-index:2}
+.handle{position:absolute;left:96px;bottom:84px;font:600 30px var(--f-ui);letter-spacing:.06em;color:rgba(255,255,255,.8);text-transform:uppercase;z-index:2}
+
+/* serif cover */
+.serif-wrap{position:absolute;left:80px;right:80px;bottom:300px;display:flex;flex-direction:column;align-items:flex-start;gap:40px;z-index:2}
+.serif-title{font-family:var(--f-serif);font-size:calc(122px*var(--k));line-height:1.04;color:#fff;text-shadow:0 10px 40px rgba(0,0,0,.35);text-wrap:balance}
+.zh .serif-title{font-weight:900}
+.label-strip{background:#fff;color:#1d1715;font-family:var(--f-serif);font-size:48px;padding:6px 22px}
+.zh .label-strip{font-weight:900;font-size:44px}
+
+/* text on photo */
+.ptext{position:absolute;left:100px;right:100px;top:210px;display:flex;flex-direction:column;gap:46px;font-family:var(--f-head);font-size:calc(62px*var(--k));line-height:1.3;color:#fff;z-index:2}
+.zh .ptext{font-family:var(--f-hand);font-weight:700;font-size:calc(58px*var(--k));line-height:1.45}
+.hl{background:linear-gradient(transparent 62%,rgba(217,167,160,.6) 62%)}
+.kicker{font-family:var(--f-script);font-weight:700;font-size:56px;color:#f1d6cf}
+
+/* notebook card */
+.card{position:absolute;width:800px;background:var(--paper);color:var(--paper-ink);border-radius:26px;padding:96px 84px 84px 100px;z-index:2;
+  box-shadow:0 30px 60px rgba(0,0,0,.35);
+  background-image:repeating-linear-gradient(transparent 0 69px,var(--paper-rule) 69px 71px);background-position:0 40px}
+.card.left{left:70px;top:46%;transform:translateY(-50%) rotate(-1.2deg)}
+.card.right{right:70px;top:47%;transform:translateY(-50%) rotate(1.4deg)}
+.rings{position:absolute;top:60px;bottom:60px;display:flex;flex-direction:column;justify-content:space-between}
+.card.left .rings{left:-26px}
+.card.right .rings{right:-26px}
+.rings i{display:block;width:58px;height:20px;border:6px solid #2d2724;border-radius:14px}
+.card .eyebrow{font:500 40px var(--f-script);color:#9a7b74;margin-bottom:6px}
+.card h3{font-family:var(--f-head);font-weight:400;font-size:calc(68px*var(--k));line-height:1.1;margin:0 0 12px;text-transform:uppercase;text-wrap:balance}
+.card .sub{font:700 calc(46px*var(--k)) var(--f-script);color:#7a6460;margin:0 0 30px}
+.card p{font-size:calc(46px*var(--k));line-height:1.5;margin:0 0 22px}
+.zh .card p{font-size:calc(42px*var(--k));line-height:1.6}
+.card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:calc(22px*var(--k))}
+.card li{font-size:calc(42px*var(--k));line-height:1.35}
+.zh .card li{font-size:calc(38px*var(--k));line-height:1.45}
+.card li small{display:block;font:700 calc(36px*var(--k)) var(--f-script);color:#8d7570}
+.card .two{display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.card .two h4{font:400 48px var(--f-head);margin:0 0 12px;text-transform:uppercase}
+.card .two li{font-size:calc(38px*var(--k))}
+
+/* doodles, stickers, arrows */
+.dood{position:absolute;color:#fff;z-index:3}
+.card .dood{color:var(--paper-ink)}
+.sticker{position:absolute;z-index:1;filter:drop-shadow(0 14px 18px rgba(0,0,0,.35))}
+.swipe{position:absolute;right:80px;bottom:70px;width:200px;height:120px;color:#fff;z-index:3}
+.pager{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);display:flex;gap:12px;z-index:3}
+.pager i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.35)}
+.pager i.on{background:#fff}

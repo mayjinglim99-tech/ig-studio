@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instagram Studio</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#191513">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Content Studio">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Chewy&family=Gochi+Hand&family=Patrick+Hand&family=Caveat:wght@500;700&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=ZCOOL+KuaiLe&family=Long+Cang&family=Noto+Sans+SC:wght@500;700&family=Noto+Serif+SC:wght@900&display=swap">
+<link rel="stylesheet" href="ig-slides.css">
+<style>
+/* Layout: one column studio — "next up" first, then create, then the ready queue and posted archive. */
+:root{
+  --page:#191513; --panel:#231d1a; --panel-2:#2c2420; --line:#3a312c;
+  --ink:#f4efe9; --muted:#a89d94; --accent:#d9a7a0; --accent-ink:#1d1715;
+  --ok:#9fc3a0; --warn:#f0c987;
+  --f-ui:"DM Sans",system-ui,-apple-system,sans-serif; --f-title:"Chewy","Arial Rounded MT Bold",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.55 var(--f-ui);padding:calc(28px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(80px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:34px}
+a{color:var(--accent)}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.top a{font-size:14px;text-decoration:none}
+h1{font:400 clamp(36px,6vw,54px)/1 var(--f-title);margin:6px 0 6px}
+.lede{color:var(--muted);margin:0;max-width:70ch}
+h2{font:700 13px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);font-weight:600}
+input,select,textarea{font:15px var(--f-ui);color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{resize:vertical;min-height:70px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:600 14px var(--f-ui);border-radius:999px;padding:10px 18px;cursor:pointer;border:1px solid var(--line);background:var(--panel-2);color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{padding:7px 13px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:wait}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--muted);font:600 14px var(--f-ui);padding:9px 16px;cursor:pointer}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.status{font-size:14px;color:var(--warn);min-height:1.5em}
+
+.item{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:22px}
+.item:first-child{border-top:0;padding-top:0}
+.item-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.item-head h3{font:400 28px var(--f-title);margin:0;flex:1 1 280px;min-width:0}
+.chip{font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);color:var(--muted);padding:3px 10px;border-radius:99px}
+.chip.ready{border-color:var(--ok);color:var(--ok)}
+.check{background:rgba(240,201,135,.08);border:1px solid rgba(240,201,135,.35);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--warn)}
+.check ul{margin:4px 0 0;padding-left:18px}
+.strip{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory}
+.thumb{flex:0 0 auto;width:min(230px,62vw);aspect-ratio:4/5;position:relative;overflow:hidden;border-radius:6px;scroll-snap-align:start;background:#000}
+.thumb .slide{position:absolute;top:0;left:0;transform-origin:0 0}
+.thumb .num{position:absolute;right:8px;top:8px;z-index:40;font:600 11px var(--f-ui);background:rgba(0,0,0,.55);color:#fff;padding:2px 8px;border-radius:99px}
+.cap{white-space:pre-wrap;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px;font-size:14px;margin:0}
+.files{font-size:13px;color:var(--muted)}
+.next{border-color:var(--accent)}
+.empty{color:var(--muted);text-align:center;padding:30px 10px}
+details summary{cursor:pointer;font-weight:600}
+
+dialog{width:min(860px,96vw);max-height:90vh;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:0}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+.dlg-body{padding:22px;display:flex;flex-direction:column;gap:16px;overflow:auto;max-height:calc(90vh - 70px)}
+.dlg-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--line)}
+fieldset{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+legend{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:0 6px}
+.hint{font-size:12px;color:var(--muted);font-weight:400}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="files">Isabelle · Penang</span>
+    <a href="#settings" id="settingsLink">Settings</a>
+  </div>
+  <header>
+    <h1>Instagram Studio</h1>
+    <p class="lede">Your next Instagram carousels, written in your brand voice and ready to post. Tap <strong>Save slides to phone</strong> to get all 1080 × 1350 slides into Photos with the caption copied.</p>
+    <p class="check" id="keyHint" hidden style="margin-top:14px">To make new posts, add your OpenAI key in <a href="#settings">Settings</a> at the bottom. It stays on this device only.</p>
+  </header>
+
+  <section class="panel next" id="nextPanel">
+    <h2>Next up to post</h2>
+    <div id="next"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Make new posts</h2>
+    <div class="grid">
+      <label>Topic <span class="hint">Leave blank and the AI picks one from your content pillars</span>
+        <input id="topic" placeholder="e.g. How I plan my week as a working mum"></label>
+      <label>Format
+        <select id="format"></select></label>
+      <label>Language
+        <span class="seg" id="langSeg"><button type="button" data-lang="en" class="on">English</button><button type="button" data-lang="zh">中文</button></span></label>
+    </div>
+    <p class="check" id="storyHint" hidden style="margin:14px 0 0">Story posts work best with your real story. Type what actually happened in Extra notes (when, what went wrong, what changed). Otherwise the AI fills the gaps and flags them for you to check.</p>
+    <label style="margin-top:14px">Extra notes <span class="hint">Real facts, a story detail, or something you can send to people who comment</span>
+      <textarea id="notes" placeholder="e.g. I'll send my free weekly planner to anyone who comments PLAN"></textarea></label>
+    <div class="row" style="margin-top:16px">
+      <button class="btn primary" id="genBtn" type="button">Create carousel</button>
+      <button class="btn" id="weekBtn" type="button">Fill my week (3 posts)</button>
+      <span class="status" id="status" role="status"></span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Ready to post <span id="readyCount"></span></h2>
+    <div id="ready"></div>
+  </section>
+
+  <section class="panel">
+    <details>
+      <summary>Posted <span id="postedCount"></span></summary>
+      <div id="posted" style="margin-top:16px"></div>
+    </details>
+  </section>
+
+  <section class="panel" id="settings">
+    <h2>Settings</h2>
+    <div class="grid">
+      <label>OpenAI key <span class="hint">Saved only in this browser on this device. Never uploaded anywhere except to OpenAI when you make a post.</span>
+        <input id="apiKey" type="password" autocomplete="off" placeholder="sk-..."></label>
+      <label>AI model <span class="hint">gpt-4o writes better (about 1–3 US cents per post). gpt-4o-mini is cheaper.</span>
+        <select id="model"><option value="gpt-4o">gpt-4o (recommended)</option><option value="gpt-4o-mini">gpt-4o-mini</option></select></label>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="saveKey" type="button">Save settings</button>
+      <button class="btn" id="forgetKey" type="button">Remove key from this device</button>
+      <span class="status" id="keyStatus"></span>
+    </div>
+    <p class="hint" style="margin-top:18px">Your queue is stored on this device. To move it to another phone or computer, back it up here and restore it there.</p>
+    <div class="row">
+      <button class="btn" id="backupBtn" type="button">Back up my posts</button>
+      <label class="btn" style="flex-direction:row;cursor:pointer">Restore from backup<input id="restoreFile" type="file" accept="application/json" hidden></label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <details>
+      <summary>My brand profile (what the AI knows about you)</summary>
+      <p class="hint">Only facts written here are used in your stories. Update it when something changes.</p>
+      <textarea id="brand" style="min-height:320px"></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn" id="saveBrand" type="button">Save brand profile</button><span class="status" id="brandStatus"></span></div>
+    </details>
+  </section>
+</div>
+
+<dialog id="editor">
+  <div class="dlg-body" id="editorBody"></div>
+  <div class="dlg-foot">
+    <button class="btn" type="button" id="edCancel">Cancel</button>
+    <button class="btn primary" type="button" id="edSave">Save and remake images</button>
+  </div>
+</dialog>
+
+<script src="ig-slides.js"></script>
+<script src="vendor/html-to-image.js"></script>
+<script src="prompts.js"></script>
+<script src="studio.js"></script>
+<script>
+const state = { items: [], formats: {}, lang: 'en', busy: new Set() };
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const setStatus = t => { $('status').textContent = t; };
+
+let lib = null;
+const persist = () => { lib.items = state.items; saveLib(lib); };
+
+async function load() {
+  lib = await loadLib();
+  state.items = lib.items;
+  state.formats = Object.fromEntries(Object.entries(FORMATS).map(([k, v]) => [k, v.name]));
+  state.canExport = false; // images are drawn in the browser
+  state.cloud = true;
+  $('brand').value = lib.settings.brand;
+  $('apiKey').value = store.get(KEY_STORE, '');
+  $('model').value = store.get(MODEL_STORE, 'gpt-4o');
+  $('keyHint').hidden = !!store.get(KEY_STORE, '');
+  $('format').innerHTML = Object.entries(state.formats).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+  render();
+}
+
+function strip(item) {
+  if (!item.slides.length) return `<div class="strip">${item.files.map((f, i) =>
+    `<div class="thumb"><span class="num">${i + 1}/${item.files.length}</span><img src="${f}" alt="Slide ${i + 1}" style="width:100%;height:100%;object-fit:cover"></div>`).join('')}</div>`;
+  return `<div class="strip">${item.slides.map((_, i) =>
+    `<div class="thumb"><span class="num">${i + 1}/${item.slides.length}</span>${IGSlides.renderSlide(item, i)}</div>`).join('')}</div>`;
+}
+
+function itemHTML(item, isNext) {
+  const busy = state.busy.has(item.id);
+  const date = new Date(item.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const posted = item.status === 'posted';
+  return `<article class="item" data-id="${item.id}">
+    <div class="item-head">
+      <h3>${esc(item.title)}</h3>
+      <span class="chip">${esc(state.formats[item.format] || item.format)}</span>
+      <span class="chip">${item.language === 'zh' ? '中文' : 'English'}</span>
+      <span class="chip ${item.files?.length || !state.canExport ? 'ready' : ''}">${item.files?.length || !state.canExport ? 'Images ready' : busy ? 'Making images…' : 'No images yet'}</span>
+      <span class="chip">${posted ? 'Posted ' + new Date(item.postedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : 'Made ' + date}</span>
+    </div>
+    ${item.checkNotes?.length && !posted ? `<div class="check"><strong>Check before posting:</strong><ul>${item.checkNotes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>` : ''}
+    ${strip(item)}
+    <pre class="cap">${esc(item.caption)}</pre>
+    <div class="row">
+      <button class="btn small ${isNext ? 'primary' : ''}" data-act="copy">Copy caption</button>
+      ${item.files?.length || !state.canExport
+        ? `<button class="btn small ${isNext ? 'primary' : ''}" data-act="save">Save slides to phone</button>${state.cloud ? '' : '<button class="btn small" data-act="folder">Open images folder</button>'}<button class="btn small" data-act="download">Download images</button>`
+        : `<button class="btn small" data-act="export" ${busy ? 'disabled' : ''}>Make images</button>`}
+      ${item.slides.length ? '<button class="btn small" data-act="edit">Edit text</button>' : ''}
+      ${posted ? `<button class="btn small" data-act="unpost">Move back to ready</button>` : `<button class="btn small" data-act="posted">Mark as posted</button>`}
+      <button class="btn small" data-act="delete">Delete</button>
+    </div>
+  </article>`;
+}
+
+function render() {
+  const ready = state.items.filter(i => i.status !== 'posted').sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const posted = state.items.filter(i => i.status === 'posted').sort((a, b) => (b.postedAt || '').localeCompare(a.postedAt || ''));
+  const next = ready[0];
+  $('next').innerHTML = next ? itemHTML(next, true)
+    : `<div class="empty">Nothing in the queue yet. Use <strong>Fill my week</strong> below to get 3 posts ready.</div>`;
+  $('ready').innerHTML = ready.length > 1 ? ready.slice(1).map(i => itemHTML(i)).join('')
+    : `<div class="empty">${next ? 'Only the post above is queued. Make a few more so you always have one ready.' : 'No posts yet.'}</div>`;
+  $('posted').innerHTML = posted.length ? posted.map(i => itemHTML(i)).join('') : '<div class="empty">Nothing posted yet.</div>';
+  $('readyCount').textContent = `(${ready.length})`;
+  $('postedCount').textContent = `(${posted.length})`;
+  requestAnimationFrame(fitThumbs);
+}
+
+function fitThumbs() {
+  document.querySelectorAll('.thumb').forEach(t => { const sl = t.querySelector('.slide'); if (sl) sl.style.transform = `scale(${t.clientWidth / 1080})`; });
+  IGSlides.fit(document);
+}
+addEventListener('resize', fitThumbs);
+document.fonts.ready.then(fitThumbs);
+
+const replace = item => { const k = state.items.findIndex(i => i.id === item.id); k < 0 ? state.items.push(item) : (state.items[k] = item); };
+
+async function createOne(format, topic, notes) {
+  const item = await generateCarousel(lib, { format, topic, notes, language: state.lang });
+  replace(item); persist(); render();
+  return item;
+}
+
+$('format').addEventListener('change', () => { $('storyHint').hidden = !['storytelling', 'credible'].includes($('format').value); });
+
+$('langSeg').addEventListener('click', e => {
+  const b = e.target.closest('button[data-lang]'); if (!b) return;
+  state.lang = b.dataset.lang;
+  $('langSeg').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+});
+
+$('genBtn').addEventListener('click', async () => {
+  $('genBtn').disabled = $('weekBtn').disabled = true;
+  setStatus('Writing your carousel… (about 20–40 seconds)');
+  try { await createOne($('format').value, $('topic').value, $('notes').value); setStatus('Done. It\'s in your queue.'); $('topic').value = ''; }
+  catch (e) { setStatus(e.message); }
+  $('genBtn').disabled = $('weekBtn').disabled = false;
+});
+
+$('weekBtn').addEventListener('click', async () => {
+  $('genBtn').disabled = $('weekBtn').disabled = true;
+  const plan = ['storytelling', 'saveable', 'relatable'];
+  try {
+    for (let k = 0; k < plan.length; k++) {
+      setStatus(`Writing post ${k + 1} of ${plan.length} (${state.formats[plan[k]]})…`);
+      await createOne(plan[k], '', $('notes').value);
+    }
+    setStatus('Your week is ready: 3 posts are in the queue.');
+  } catch (e) { setStatus(e.message); }
+  $('genBtn').disabled = $('weekBtn').disabled = false;
+});
+
+$('saveBrand').addEventListener('click', async () => {
+  try { lib.settings.brand = $('brand').value.trim() || DEFAULT_BRAND; persist(); $('brandStatus').textContent = 'Saved'; }
+  catch (e) { $('brandStatus').textContent = e.message; }
+  setTimeout(() => $('brandStatus').textContent = '', 2000);
+});
+
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button[data-act]'); if (!b) return;
+  const id = b.closest('[data-id]').dataset.id;
+  const item = state.items.find(i => i.id === id);
+  const act = b.dataset.act;
+  try {
+    if (act === 'copy') {
+      try { await navigator.clipboard.writeText(item.caption); b.textContent = 'Copied'; }
+      catch { const r = document.createRange(); r.selectNodeContents(b.closest('.item').querySelector('.cap')); getSelection().removeAllRanges(); getSelection().addRange(r); b.textContent = 'Selected, press ⌘C'; }
+      setTimeout(() => b.textContent = 'Copy caption', 1800);
+    }
+    if (act === 'save') await saveToPhone(item, b);
+    if (act === 'download') {
+      const label = b.textContent;
+      const files = await slideFiles(item, b);
+      files.forEach((file, k) => setTimeout(() => { const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name; a.click(); }, k * 300));
+      b.textContent = label;
+    }
+    if (act === 'posted' || act === 'unpost') { item.status = act === 'posted' ? 'posted' : 'ready'; item.postedAt = act === 'posted' ? new Date().toISOString() : null; persist(); render(); }
+    if (act === 'delete') { if (!confirm('Delete this carousel from your queue?')) return; state.items = state.items.filter(i => i.id !== id); persist(); render(); }
+    if (act === 'edit') openEditor(item);
+  } catch (err) { setStatus(err.message); }
+});
+
+/* ── Editor ── */
+const FIELDS = { big: 'Big number', title: 'Headline', sub: 'Subtitle', label: 'Label strip', eyebrow: 'Small label', kicker: 'Small handwritten line' };
+let editing = null;
+function openEditor(item) {
+  editing = JSON.parse(JSON.stringify(item));
+  const sl = editing.slides.map((s, i) => {
+    const parts = Object.entries(FIELDS).filter(([k]) => k in s).map(([k, name]) =>
+      `<label>${name}<input data-i="${i}" data-f="${k}" value="${esc(s[k])}"></label>`);
+    if (s.lines) parts.push(`<label>Text <span class="hint">One paragraph per line. Wrap words in **double stars** to highlight them.</span><textarea data-i="${i}" data-f="lines">${esc(s.lines.join('\n'))}</textarea></label>`);
+    if (s.items) parts.push(`<label>List <span class="hint">One item per line. Add a small note after a | sign.</span><textarea data-i="${i}" data-f="items">${esc(s.items.map(o => typeof o === 'string' ? o : o.text + (o.note ? ' | ' + o.note : '')).join('\n'))}</textarea></label>`);
+    if (s.do) parts.push(`<label>Do (one per line)<textarea data-i="${i}" data-f="do">${esc(s.do.join('\n'))}</textarea></label>`);
+    if (s.dont) parts.push(`<label>Don't (one per line)<textarea data-i="${i}" data-f="dont">${esc(s.dont.join('\n'))}</textarea></label>`);
+    return `<fieldset><legend>Slide ${i + 1}</legend>${parts.join('')}</fieldset>`;
+  }).join('');
+  $('editorBody').innerHTML = `<label>Name<input data-f="title" value="${esc(editing.title)}"></label>
+    <label>Caption<textarea data-f="caption" style="min-height:180px">${esc(editing.caption)}</textarea></label>${sl}`;
+  $('editor').showModal();
+}
+$('edCancel').addEventListener('click', () => $('editor').close());
+$('edSave').addEventListener('click', async () => {
+  $('editorBody').querySelectorAll('[data-f]').forEach(el => {
+    const f = el.dataset.f, v = el.value;
+    if (el.dataset.i === undefined) { editing[f] = v; return; }
+    const s = editing.slides[+el.dataset.i];
+    const lines = v.split('\n').map(x => x.trim()).filter(Boolean);
+    if (f === 'lines' || f === 'do' || f === 'dont') s[f] = lines;
+    else if (f === 'items') s.items = lines.map(l => { const [text, note] = l.split('|').map(x => x.trim()); return note ? { text, note } : { text }; });
+    else s[f] = v;
+  });
+  try {
+    replace(editing); persist(); $('editor').close(); render();
+  } catch (e) { setStatus(e.message); }
+});
+
+// Slide images as files: the saved PNG/JPGs when they exist, otherwise drawn here in the browser
+async function slideFiles(item, b) {
+  const name = (k, ext) => `slide-${String(k + 1).padStart(2, '0')}.${ext}`;
+  if (item.files?.length) {
+    b.textContent = 'Preparing…';
+    return Promise.all(item.files.map(async (f, k) => {
+      const blob = await fetch(f).then(r => r.blob());
+      return new File([blob], name(k, blob.type === 'image/jpeg' ? 'jpg' : 'png'), { type: blob.type });
+    }));
+  }
+  await document.fonts.ready;
+  const stage = document.createElement('div');
+  stage.style.cssText = 'position:fixed;left:-20000px;top:0;width:1080px;height:1350px;overflow:hidden';
+  document.body.appendChild(stage);
+  const files = [];
+  try {
+    for (let k = 0; k < item.slides.length; k++) {
+      b.textContent = `Making slide ${k + 1} of ${item.slides.length}…`;
+      stage.innerHTML = IGSlides.renderSlide(item, k);
+      IGSlides.fit(stage);
+      const url = await htmlToImage.toJpeg(stage.firstElementChild, { width: 1080, height: 1350, pixelRatio: 1, quality: 0.92, backgroundColor: '#000' });
+      const blob = await fetch(url).then(r => r.blob());
+      files.push(new File([blob], name(k, 'jpg'), { type: 'image/jpeg' }));
+    }
+  } finally { stage.remove(); }
+  return files;
+}
+
+// Phone: share the slide images to Photos / Instagram in one go (falls back to normal downloads)
+async function saveToPhone(item, b) {
+  const label = b.textContent;
+  b.textContent = 'Preparing…';
+  try {
+    const files = await slideFiles(item, b);
+    if (navigator.canShare && navigator.canShare({ files })) {
+      try { await navigator.clipboard.writeText(item.caption); } catch {}
+      await navigator.share({ files });
+      setStatus('Caption copied too. Paste it when Instagram asks for one.');
+    } else {
+      files.forEach((file, k) => setTimeout(() => { const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name; a.click(); }, k * 300));
+    }
+  } catch (e) { if (e.name !== 'AbortError') setStatus(e.message); }
+  b.textContent = label;
+}
+
+/* ── Settings, backup ── */
+$('saveKey').addEventListener('click', () => {
+  store.set(KEY_STORE, $('apiKey').value.trim());
+  store.set(MODEL_STORE, $('model').value);
+  $('keyHint').hidden = !!$('apiKey').value.trim();
+  $('keyStatus').textContent = 'Saved on this device';
+  setTimeout(() => $('keyStatus').textContent = '', 2000);
+});
+$('forgetKey').addEventListener('click', () => {
+  try { localStorage.removeItem(KEY_STORE); } catch {}
+  $('apiKey').value = ''; $('keyHint').hidden = false;
+  $('keyStatus').textContent = 'Key removed';
+});
+$('backupBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(lib, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `instagram-studio-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+});
+$('restoreFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (!Array.isArray(data.items)) throw new Error('That file is not an Instagram Studio backup.');
+    lib = { settings: data.settings || lib.settings, items: data.items };
+    saveLib(lib); state.items = lib.items; $('brand').value = lib.settings.brand; render();
+    setStatus(`Restored ${lib.items.length} posts.`);
+  } catch (err) { setStatus(err.message); }
+  e.target.value = '';
+});
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+load().catch(e => setStatus(e.message));
+</script>
+</body>
+</html>
